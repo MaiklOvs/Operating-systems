@@ -1,36 +1,40 @@
-﻿#include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-int sumDivisiors(int start, int end)
+
+int atoi(const char* nprt);
+int sumDivisors(int start, int end)
 {
-    unsigned long sumDivisiors = 0;
+    unsigned long sumDivisors = 0;
 
     for (int i = start; i <= end; i++)
     {
-        unsigned long countDivisiors = 0;
+        unsigned long countDivisors = 0;
         for (int j = 1; j <= sqrt(i); j++)
         {
             if (!(i%j))
             {
                 if (j!=i/j)
                 {
-                    countDivisiors += 2;
+                    countDivisors += 2;
                 }
                 else
                 {
-                    countDivisiors++;
+                    countDivisors++;
                 }
             }
         }
 
-        sumDivisiors += countDivisiors;
+        sumDivisors += countDivisors;
     }
-    return sumDivisiors;
+    return sumDivisors;
 }
 
 int main(int argc, char* argv[])
 {
-    printf("%d", sumDivisiors(1, 1000000));
+    int q = atoi(argv[1]);
+    int p = atoi(argv[2]);
+    printf("%d", sumDivisors(q, p));
 
 }
 

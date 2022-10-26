@@ -1,23 +1,23 @@
-﻿#include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <pthread.h>
+#include <unistd.h>
 
-#define P 1
-#define Q 1000000
+int atoi (const char *nprt); // Функция для приведения типов из  char*  в int
+unsigned long sum = 0; // Глобальная переменная для подсчета суммы всех делителей
+pthread_mutex_t mutex; // Мьютекс
 
-unsigned long sum = 0;
-pthread_mutex_t mutex;
-struct interval
+typedef struct // Структура для интервала
 {
     int start;
     int end;
-};
+} pthrData;
 
 
-void *sumDivisiors(void* interv)
+void *sumDivisors(void* thread_data) // Потоковая функция
 {
-    struct interval* data = (struct interval*) interv;
+    pthrData *data = (pthrData*) thread_data;
     for (int i = data->start; i <= data->end; i++)
     {
         for (int j = 1; j <= sqrt(i); j++)
@@ -44,19 +44,37 @@ void *sumDivisiors(void* interv)
 
 int main(int argc, char* argv[])
 {
-    struct interval intrvl;
-    struct interval intrvl_2;
-    intrvl.start = P;
-    intrvl.end = Q/2;
-    intrvl_2.start = (Q / 2)+1;
-    intrvl_2.end = Q;
-    pthread_t tid1,tid2;
-    pthread_mutex_init(&mutex,NULL);
-    pthread_create(&tid1,NULL,sumDivisiors,&intrvl);
-    pthread_create(&tid2,NULL,sumDivisiors,&intrvl_2);
-    pthread_join(tid1,NULL);
-    pthread_join(tid2,NULL);
-    pthread_mutex_destroy(&mutex);
-    printf("%ld",sum);
+    int q = atoi(argv[1]); // Первое число
+    int p = atoi(argv[2]); // Второе число
+    int countCPU = sysconf(_SC_NPROCESSORS_CONF); // Количество физических ядер
+    pthread_t* threads = (pthread_t*) malloc(countCPU * sizeof(pthread_t)); // Динамическое выделение памяти под идентификаторы потоков
+    pthrData* threadData = (pthrData*) malloc(countCPU * sizeof(pthrData)); // Диамическое выделение памяти под структуры данных
+    pthread_mutex_init(&mutex,NULL); // Мьютекс, для синхронизации потоков
+    int interval_t = p / countCPU; // Рассчитываем интервал для потока
+    threadData[0].start = q; // Для первого элемента массива структур задаем начало
+    threadData[0].end = interval_t; // и конец отдельно
+    pthread_create(&(threads[0]), NULL, sumDivisors, &threadData[0]); // Создаем поток
+    for (int i = 1; i < countCPU; i++) // Циклично заполняем структуры интервалами для потоков
+    {
+        threadData[i].start = threadData[i-1].end+1;
+        if (i!=(countCPU-1))
+        {
+            threadData[i].end = threadData[i-1].end + interval_t;
+        }
+        else
+        {
+            threadData[i].end = p;          // На послденем интервале конец будет равен заданному числу вначале программы
+        }
+        pthread_create(&(threads[i]), NULL, sumDivisors, &threadData[i]);
+    }
+
+    for(int i = 0; i < countCPU; i++)
+    {
+        pthread_join(threads[i], NULL);  // Получаем результаты
+    }
+    pthread_mutex_destroy(&mutex); // Уничтожаем мьютекс
+    free(threads); // Освобождаем память из-под массива идентификаторов
+    free(threadData); // Освобождаем память из-под массива структур
+    printf("Sum of divisors = %ld",sum);
     return 0;
 }
