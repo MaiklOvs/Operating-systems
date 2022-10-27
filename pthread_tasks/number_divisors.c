@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <math.h>
 
+//Задача:
+// На заданном интервале чисел найти сумму всех
+// делителей чисел. Написать программу без использования потоков и с использованием потоков 
+
 int atoi(const char* nprt);
 int sumDivisors(int start, int end)
 {
@@ -37,4 +41,3 @@ int main(int argc, char* argv[])
     printf("%d", sumDivisors(q, p));
 
 }
-

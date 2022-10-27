@@ -4,6 +4,11 @@
 #include <pthread.h>
 #include <unistd.h>
 
+//Задача:
+// На заданном интервале чисел найти сумму всех
+// делителей чисел. Написать программу без использования потоков и с использованием потоков
+
+
 int atoi (const char *nprt); // Функция для приведения типов из  char*  в int
 unsigned long sum = 0; // Глобальная переменная для подсчета суммы всех делителей
 pthread_mutex_t mutex; // Мьютекс
@@ -18,6 +23,7 @@ typedef struct // Структура для интервала
 void *sumDivisors(void* thread_data) // Потоковая функция
 {
     pthrData *data = (pthrData*) thread_data;
+    unsigned long sumOfDivisiors = 0;
     for (int i = data->start; i <= data->end; i++)
     {
         for (int j = 1; j <= sqrt(i); j++)
@@ -26,19 +32,18 @@ void *sumDivisors(void* thread_data) // Потоковая функция
             {
                 if (j!=i/j)
                 {
-                    pthread_mutex_lock(&mutex);
-                    sum += 2;
-                    pthread_mutex_unlock(&mutex);
+                    sumOfDivisiors += 2;
                 }
                 else
                 {
-                    pthread_mutex_lock(&mutex);
-                    sum++;
-                    pthread_mutex_unlock(&mutex);
+                    sumOfDivisiors++;
                 }
             }
         }
     }
+    pthread_mutex_lock(&mutex);
+    sum += sumOfDivisiors;
+    pthread_mutex_unlock(&mutex);
     return NULL;
 }
 
@@ -46,7 +51,7 @@ int main(int argc, char* argv[])
 {
     int q = atoi(argv[1]); // Первое число
     int p = atoi(argv[2]); // Второе число
-    int countCPU = sysconf(_SC_NPROCESSORS_CONF); // Количество физических ядер
+    unsigned long countCPU = sysconf(_SC_NPROCESSORS_CONF); // Количество физических ядер
     pthread_t* threads = (pthread_t*) malloc(countCPU * sizeof(pthread_t)); // Динамическое выделение памяти под идентификаторы потоков
     pthrData* threadData = (pthrData*) malloc(countCPU * sizeof(pthrData)); // Диамическое выделение памяти под структуры данных
     pthread_mutex_init(&mutex,NULL); // Мьютекс, для синхронизации потоков
