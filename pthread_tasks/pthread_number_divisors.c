@@ -52,14 +52,31 @@ int main(int argc, char* argv[])
 {
     int q = atoi(argv[1]); // Первое число
     int p = atoi(argv[2]); // Второе число
+    if ( q > p )
+    {
+    printf("Sum of divisors = %ld",sum);
+    return 0;
+    }
     unsigned long countCPU = sysconf(_SC_NPROCESSORS_CONF); // Количество физических ядер
     pthread_t* threads = (pthread_t*) malloc(countCPU * sizeof(pthread_t)); // Динамическое выделение памяти под идентификаторы потоков
     pthrData* threadData = (pthrData*) malloc(countCPU * sizeof(pthrData)); // Диамическое выделение памяти под структуры данных
     pthread_mutex_init(&mutex,NULL); // Мьютекс, для синхронизации потоков
-    int interval_t = p / countCPU; // Рассчитываем интервал для потока
+    int interval_t = 0;  // Рассчитываем интервал для потока
+    printf("%d\n", interval_t);
+
+    printf("%d: %d %d\n", 0, threadData[0].start, threadData[0].end);
+    if (interval_t <= countCPU)
+    {
+    interval_t = p;
     threadData[0].start = q; // Для первого элемента массива структур задаем начало
     threadData[0].end = interval_t; // и конец отдельно
     pthread_create(&(threads[0]), NULL, sumDivisors, &threadData[0]); // Создаем поток
+    pthread_join(threads[0], NULL);  // Получаем результаты
+    }
+    else
+   {
+     interval_t = p / countCPU;
+     pthread_create(&(threads[0]), NULL, sumDivisors, &threadData[0]); // Создаем поток
     for (int i = 1; i < countCPU; i++) // Циклично заполняем структуры интервалами для потоков
     {
         threadData[i].start = threadData[i-1].end+1;
@@ -71,13 +88,15 @@ int main(int argc, char* argv[])
         {
             threadData[i].end = p;          // На послденем интервале конец будет равен заданному числу вначале программы
         }
+        printf("%d: %d %d\n", i, threadData[i].start, threadData[i].end);
         pthread_create(&(threads[i]), NULL, sumDivisors, &threadData[i]);
     }
-
     for(int i = 0; i < countCPU; i++)
     {
         pthread_join(threads[i], NULL);  // Получаем результаты
     }
+    }
+
     pthread_mutex_destroy(&mutex); // Уничтожаем мьютекс
     free(threads); // Освобождаем память из-под массива идентификаторов
     free(threadData); // Освобождаем память из-под массива структур
