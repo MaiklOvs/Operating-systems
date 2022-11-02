@@ -1,3 +1,3 @@
 all:
-	gcc TCP-client.c -o TCP-client
-	gcc TCP-server.c -o TCP-server
+	gcc UDP_client.c -o UDP_client
+	gcc UDP_server.c -o UDP_server
