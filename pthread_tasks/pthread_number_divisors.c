@@ -55,10 +55,10 @@ int main(int argc, char* argv[])
     rewind(fd);
     while (!feof(fd))
     {
-      if (fgetc(fd) == '\n')
-      {
-        ++countLines;
-      }
+        if (fgetc(fd) == '\n')
+        {
+            ++countLines;
+        }
 
     }
     pthread_t* threads = (pthread_t*) malloc(countLines * sizeof(pthread_t)); // Динамическое выделение памяти под идентификаторы потоков
@@ -67,13 +67,13 @@ int main(int argc, char* argv[])
     rewind(fd);
     for (size_t i = 0; i < countLines; ++i)
     {
-      fscanf(fd,"%d %d", &threadData[i].start, &threadData[i].end );
-      pthread_create(&threads[i], NULL, sumDivisors, &threadData[i]);
+        fscanf(fd,"%d %d", &threadData[i].start, &threadData[i].end );
+        pthread_create(&threads[i], NULL, sumDivisors, &threadData[i]);
     }
     for (int i = 0; i < countLines; ++i)
     {
-      printf("%d %d %d\n",i,threadData[i].start, threadData[i].end);
-      pthread_join(threads[i], NULL);  // Получаем результаты
+        printf("%d %d %d\n",i,threadData[i].start, threadData[i].end);
+        pthread_join(threads[i], NULL);  // Получаем результаты
     }
     pthread_mutex_destroy(&mutex); // Уничтожаем мьютекс
     free(threads); // Освобождаем память из-под массива идентификаторов
