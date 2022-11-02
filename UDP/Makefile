@@ -1,3 +1,3 @@
 all:
-	gcc UDP_client.c -o UDP_client
-	gcc UDP_server.c -o UDP_server
+	gcc UDP_Client.c -o UDP_Client
+	gcc UDP_Server.c -o UDP_Server
