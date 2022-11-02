@@ -5,7 +5,7 @@
 
 //Задача:
 // На заданном интервале чисел найти сумму всех
-// делителей чисел. Написать программу без использования потоков и с использованием потоков 
+// делителей чисел. Написать программу без использования потоков и с использованием потоков
 
 int atoi(const char* nprt);
 int sumDivisors(int start, int end)
@@ -39,6 +39,6 @@ int main(int argc, char* argv[])
 {
     int q = atoi(argv[1]);
     int p = atoi(argv[2]);
-    printf("%d", sumDivisors(q, p));
+    printf("%d\n", sumDivisors(q, p));
 
 }
