@@ -78,6 +78,7 @@ int main(int argc, char* argv[])
     pthread_mutex_destroy(&mutex); // Уничтожаем мьютекс
     free(threads); // Освобождаем память из-под массива идентификаторов
     free(threadData); // Освобождаем память из-под массива структур
+    fclose(fd);
     printf("Sum of divisors = %ld\n",sum);
     return 0;
 }
