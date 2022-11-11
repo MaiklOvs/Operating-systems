@@ -98,7 +98,6 @@ int main(int argc, char* argv[])
 
     for (size_t i = 0; i < countCPU; i++)
     {
-        printf("%ld %d %d\n",i,threadData[i].start, threadData[i].end);
         if ((n = write(sockfd, &threadData[i], sizeof(threadData[i]))) < 0)
         {
             perror(NULL);

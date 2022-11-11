@@ -113,7 +113,6 @@ int main(int argc, char *argv[]) {
             close(newsockfd);
             exit(1);
         }
-        printf("%d %d %d\n",i,threadData[i].start, threadData[i].end);
         pthread_create(&threads[i],NULL,sumDivisors,&threadData[i]);
     }
 
