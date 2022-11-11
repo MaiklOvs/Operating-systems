@@ -30,6 +30,8 @@ int main (int argc, char* argv[])
     else
     {
         interval_t = p / countCPU;
+        threadData[0].start = q;
+        threadData[0].end = interval_t;
         for (int i = 1; i < countCPU; i++) // Циклично заполняем структуры интервалами для потоков
         {
             threadData[i].start = threadData[i-1].end+1;
@@ -41,7 +43,11 @@ int main (int argc, char* argv[])
             {
                 threadData[i].end = p;          // На послденем интервале конец будет равен заданному числу вначале программы
             }
-            fprintf(fd, "%d %d\n", threadData[i].start, threadData[i].end);
+
+        }
+        for (size_t i = 0; i < countCPU; i++)
+        {
+          fprintf(fd, "%d %d\n", threadData[i].start, threadData[i].end);
         }
     }
     free(threadData);
